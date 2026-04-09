@@ -4,30 +4,32 @@ using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class AddressableManager : MonoBehaviour
 {
-    public string address; // Addressables에 등록한 주소
-    private AsyncOperationHandle<GameObject> handle;
+    string assetAddress = "TestA"; // Addressables에 설정된 주소
 
-    public void Load()
+    void Start()
     {
-        handle = Addressables.LoadAssetAsync<GameObject>(address);
-        handle.Completed += op =>
-        {
-            if (op.Status == AsyncOperationStatus.Succeeded)
-            {
-                Instantiate(op.Result);
-            }
-            else
-            {
-                Debug.LogError($"Addressables load failed: {op.OperationException}");
-            }
-        };
+        LoadAsset();
     }
 
-    public void Release()
+    public void LoadAsset()
     {
-        if (handle.IsValid())
+        Debug.Log("Attempting to load asset: " + assetAddress);
+        var handle = Addressables.LoadAssetAsync<GameObject>(assetAddress);
+        handle.Completed += OnLoadDone;
+        Debug.Log("Load operation has been initiated.");
+    }
+
+    private void OnLoadDone(AsyncOperationHandle<GameObject> obj)
+    {
+
+        Debug.Log("dssada");
+        if (obj.Status == AsyncOperationStatus.Succeeded)
         {
-            Addressables.Release(handle);
+            Instantiate(obj.Result); // 에셋 인스턴스화
+        }
+        else
+        {
+            Debug.LogError("Failed to load Addressable asset.");
         }
     }
 }
